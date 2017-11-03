@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use autodie;
 
+# arbitrarily-chosen versions
 my @target_versions = qw/5.8.8 5.10.0 5.14.3 5.22.2 5.24.2 5.26.1/;
 
 install_missing_versions();
@@ -72,4 +73,10 @@ $big_string =~ /(\xFF\xFF\xFF)/;
 if ($1) {
 
 }
+
+$big_string =~ s/XYZ//g; # don't like the XYZs!
+
+$big_string =~ s/EFG/ABC/g;
+$big_string =~ s/ABC/XXX/g;
+
 print "done!";
