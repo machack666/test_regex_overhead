@@ -4,8 +4,9 @@ use strict;
 use warnings;
 use autodie;
 
-# arbitrarily-chosen versions
-my @target_versions = qw/5.8.9 5.10.1 5.12.5 5.14.4 5.16.3 5.18.4 5.20.3 5.22.3 5.24.1 5.26.1/;
+# latest versions in each major branch
+my @default_versions = qw/5.8.9 5.10.1 5.12.5 5.14.4 5.16.3 5.18.4 5.20.3 5.22.3 5.24.1 5.26.1/;
+my @target_versions = @ARGV ? @ARGV : @default_versions;
 
 install_missing_versions();
 setup_scripts();
