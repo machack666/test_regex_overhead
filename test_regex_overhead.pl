@@ -16,25 +16,35 @@ run_tests();
 
 sub run_tests {
     for my $vers (@target_versions) {
-        print "Version: $vers (Encode)\n";
-        system("PLENV_VERSION=$vers time plenv exec perl with_encode.pl");
-        print "Version: $vers (No Encode)\n";
-        system("PLENV_VERSION=$vers time plenv exec perl without_encode.pl");
+        print "Version: $vers (Encode, No Safe)\n";
+        system("PLENV_VERSION=$vers time plenv exec perl with_encode_without_safe.pl");
+        print "Version: $vers (Encode, Safe)\n";
+        system("PLENV_VERSION=$vers time plenv exec perl with_encode_with_safe.pl");
+        print "Version: $vers (No Encode, No Safe)\n";
+        system("PLENV_VERSION=$vers time plenv exec perl without_encode_without_safe.pl");
+        print "Version: $vers (No Encode, Safe)\n";
+        system("PLENV_VERSION=$vers time plenv exec perl without_encode_with_safe.pl");
     }
 }
 
 sub setup_scripts {
     my @prog = <DATA>;
 
-    open my $enc, '>', 'with_encode.pl';
-    open my $noenc, '>', 'without_encode.pl';
+    open my $enc_safe, '>', 'with_encode_with_safe.pl';
+    open my $enc_nosafe, '>', 'with_encode_without_safe.pl';
+    open my $noenc_safe, '>', 'without_encode_with_safe.pl';
+    open my $noenc_nosafe, '>', 'without_encode_without_safe.pl';
 
     for (@prog) {
-        print $enc $_;
-        print $noenc $_ unless /Encode/;
+        print $enc_safe $_;
+        print $enc_nosafe $_ unless /Safe/;
+        print $noenc_safe $_ unless /Encode/;
+        print $noenc_nosafe $_ unless /Encode/ || /Safe/;
     }
-    close $enc;
-    close $noenc;
+    close $enc_safe;
+    close $enc_nosafe;
+    close $noenc_safe;
+    close $noenc_nosafe;
 }
 
 sub install_missing_versions {
@@ -58,8 +68,13 @@ use strict;
 use warnings;
 
 use Encode;
+use Safe;
 
-my $big_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" x 10_000_000;
+my $mySafe = new Safe();
+my $big_string;
+
+my $SafeStr = <<EOSafe;
+$big_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" x 10_000_000;
 
 $big_string .= "Easy as 123";
 $big_string =~ /do-rey-mi/;
@@ -80,3 +95,6 @@ $big_string =~ s/EFG/ABC/g;
 $big_string =~ s/ABC/XXX/g;
 
 print "done!";
+EOSafe
+
+$mySafe->reval($SafeStr);
