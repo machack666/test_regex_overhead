@@ -60,10 +60,18 @@ use warnings;
 
 use Encode;
 
+my $highbit = "¿qué pasa?";     # Encode
+$highbit =~ /¢/;                # Encode
+
+Encode->find_encoding('utf8');
+
+binmode(\*STDOUT, ':utf8');     # Encode
+
 my $big_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" x 10_000_000;
 
 $big_string .= "Easy as 123";
 $big_string =~ /do-rey-mi/;
+
 (substr $big_string, 100_000, 200) = "\xFF\xFF\xFF";
 
 $big_string =~ /do-rey-mi/;
