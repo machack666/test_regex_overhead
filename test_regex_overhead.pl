@@ -79,8 +79,9 @@ Encode->find_encoding('utf8');
 binmode(\*STDOUT, ':utf8');     # Encode
 
 my $mySafe = new Safe();
+$mySafe->untrap(qw/print/);
 
-my $SafeStr = <<EOSafe;
+my $SafeStr = <<'EOSafe';
 my $big_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" x 10_000_000;
 $big_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" x 10_000_000;
 
@@ -107,3 +108,5 @@ print "done!";
 EOSafe
 
 $mySafe->reval($SafeStr);
+warn "Safe had issues: $@" if $@;
+
